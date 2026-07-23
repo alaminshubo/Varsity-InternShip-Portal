@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="auth-container" style="display: flex; justify-content: center; align-items: center; min-height: 85vh; padding: 40px 20px;">
+    
+    <div class="auth-box" style="width: 100%; max-width: 480px; background-color: #0f1938; padding: 40px; border-radius: 12px; border: 1px solid #1e293b80; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);">
+        <h2 style="text-align: center; color: #ffffff; margin-bottom: 8px; font-weight: 700; font-size: 26px;">Create Account</h2>
+        <p style="color: #94a3b8; text-align: center; margin-bottom: 30px; font-size: 14px;">Join the internship ecosystem</p>
+        
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div style="color: #f87171; background-color: #7f1d1d40; border: 1px solid #f8717140; padding: 10px; border-radius: 6px; margin-bottom: 20px; text-align: center; font-size: 14px;">
+              {% for message in messages %}
+                <p style="margin: 0;">{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+        
+        <form action="/register" method="POST">
+            
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label for="role" style="display: block; margin-bottom: 8px; color: #94a3b8; font-size: 14px;">Register As</label>
+                <select id="role" name="role" required style="width: 100%; padding: 12px 15px; border-radius: 6px; border: 1px solid #1e293b; background-color: #0b1120; color: #ffffff; font-size: 14px; outline: none; cursor: pointer;">
+                    <option value="student">Student</option>
+                    <option value="company">Company</option>
+                </select>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label for="fullname" style="display: block; margin-bottom: 8px; color: #94a3b8; font-size: 14px;">Full Name</label>
+                <input type="text" id="fullname" name="fullname" required style="width: 100%; padding: 12px 15px; border-radius: 6px; border: 1px solid #1e293b; background-color: #0b1120; color: #ffffff; font-size: 14px; outline: none;">
+            </div>
+            
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label for="email" style="display: block; margin-bottom: 8px; color: #94a3b8; font-size: 14px;">Email Address</label>
+                <input type="email" id="email" name="email" required style="width: 100%; padding: 12px 15px; border-radius: 6px; border: 1px solid #1e293b; background-color: #0b1120; color: #ffffff; font-size: 14px; outline: none;">
+            </div>
+            
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label for="password" style="display: block; margin-bottom: 8px; color: #94a3b8; font-size: 14px;">Password</label>
+                <input type="password" id="password" name="password" required style="width: 100%; padding: 12px 15px; border-radius: 6px; border: 1px solid #1e293b; background-color: #0b1120; color: #ffffff; font-size: 14px; outline: none;">
+            </div>
+
+            <div class="input-group" id="student-id-group" style="margin-bottom: 20px;">
+                <label for="student_id" style="display: block; margin-bottom: 8px; color: #94a3b8; font-size: 14px;">Student ID</label>
+                <input type="text" id="student_id" name="student_id" required style="width: 100%; padding: 12px 15px; border-radius: 6px; border: 1px solid #1e293b; background-color: #0b1120; color: #ffffff; font-size: 14px; outline: none;">
+            </div>
+
+            <div class="input-group" id="department-group" style="margin-bottom: 24px;">
+                <label for="department" style="display: block; margin-bottom: 8px; color: #94a3b8; font-size: 14px;">Department</label>
+                <input type="text" id="department" name="department" required style="width: 100%; padding: 12px 15px; border-radius: 6px; border: 1px solid #1e293b; background-color: #0b1120; color: #ffffff; font-size: 14px; outline: none;">
+            </div>
+            
+            <div class="form-action">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; background-color: #2563eb; color: #ffffff; border: none; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; margin-bottom: 16px;">Register</button>
+            </div>
+        </form>
+        
+        <p class="auth-link" style="text-align: center; font-size: 13px; color: #94a3b8; margin: 0;">
+            Already have an account? <a href="/login" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Sign In</a>
+        </p>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

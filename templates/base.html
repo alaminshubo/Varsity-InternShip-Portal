@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUB Internship Portal</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo-section">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo">
+            <div class="university-name">
+                <h2>Varsity Internship Portal</h2>
+                <p>Department of Computer Science & Engineering</p>
+            </div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/" class="active">Home</a></li>
+            <li><a href="#">Internships</a></li>
+            <li><a href="#">For Companies</a></li>
+            <li><a href="#">For Students</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+        
+        <div class="nav-buttons">
+            {% if session.get('logged_in') %}
+                <span class="user-profile-name" style="color: #3b82f6; font-weight: 600; font-size: 13px; text-align: right; margin-right: 10px;">
+                    <i class="fas fa-user" style="margin-right: 5px;"></i> 
+                    {{ session['user_name'] }} 
+                    <small style="font-size: 10px; color: #94a3b8; display: block;">
+                        ({{ session['user_type'] | capitalize }})
+                    </small>
+                </span>
+                <a href="/logout" class="btn btn-outline-light">Logout</a>
+            {% else %}
+                <a href="/login" class="btn btn-outline-light">Login</a>
+                <a href="/register" class="btn btn-primary">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+</html>

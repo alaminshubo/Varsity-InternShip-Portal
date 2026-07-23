@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Varsity Internship Portal - Dashboard</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="min-h-screen text-white font-sans" style="background-color: #0b1120;">
+
+    <nav class="py-3 px-6" style="background-color: #0d1527; border-bottom: 1px solid #1e293b;">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden">
+                    <span class="text-xs text-gray-800 font-bold">NUB</span>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-wide">Varsity Internship Portal</h1>
+                    <p class="text-xs text-blue-500 font-medium">Department of Computer Science & Engineering</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-800">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>
+                    <span class="text-sm font-semibold text-blue-400">{{ session['user'] }}</span>
+                </div>
+                <a href="/logout" class="bg-slate-800 hover:bg-slate-700 text-sm font-semibold py-1.5 px-4 rounded border border-slate-700 transition">
+                    Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-8 space-y-8">
+        
+        <section class="rounded-xl p-8 relative overflow-hidden border border-slate-800/80" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);">
+            <div class="max-w-3xl space-y-3 relative z-10">
+                <h2 class="text-3xl font-extrabold tracking-tight md:text-4xl text-white">
+                    Bridge Your Academic Excellence to Corporate Careers
+                </h2>
+                <p class="text-slate-400 text-sm md:text-base leading-relaxed">
+                    A centralized pipeline designed for CSE students to explore verified corporate internships, submit portfolios, and accelerate career trajectories.
+                </p>
+            </div>
+        </section>
+
+        <div class="flex items-center space-x-3 text-slate-400 font-medium">
+            <span>Logged in as:</span>
+            <span class="text-white font-bold text-lg">{{ session['user'] }}</span>
+            <span class="bg-blue-900/50 text-blue-400 text-xs font-bold px-2.5 py-1 rounded border border-blue-800/60 uppercase tracking-wider">
+                Student
+            </span>
+        </div>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-900/40 p-4 rounded-xl border border-slate-800/60">
+            <div class="relative flex items-center">
+                <i class="fas fa-search absolute left-4 text-cyan-400"></i>
+                <input type="text" placeholder="Search internships by title..." class="w-full pl-11 pr-4 py-3 rounded-lg text-sm bg-slate-950/60 border border-slate-800/80 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/80 transition">
+            </div>
+            <div class="relative flex items-center">
+                <i class="fas fa-map-marker-alt absolute left-4 text-pink-500"></i>
+                <input type="text" placeholder="Filter by location (e.g., Remote)..." class="w-full pl-11 pr-4 py-3 rounded-lg text-sm bg-slate-950/60 border border-slate-800/80 text-white placeholder-slate-500 focus:outline-none focus:border-pink-500/80 transition">
+            </div>
+        </section>
+
+        <section class="bg-slate-900/40 rounded-xl border border-slate-800/60 overflow-hidden">
+            <div class="p-5 border-b border-slate-800/60">
+                <h3 class="text-lg font-bold tracking-wide text-white">
+                    Available Internships <span class="text-slate-400 font-normal text-sm">[NUB Live Feed]</span>
+                </h3>
+            </div>
+            <div class="p-12 text-center text-slate-400 space-y-2">
+                <div class="text-slate-600 text-3xl mb-2">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <p class="text-sm">No approved internships are currently available.</p>
+            </div>
+        </section>
+
+    </main>
+</body>
+</html>

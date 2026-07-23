@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Varsity Internship Portal - Student Dashboard</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { 
+            background-color: #0B132B; 
+            color: #FFFFFF; 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+        }
+        .glass-card {
+            background: rgba(15, 25, 56, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .input-glow:focus {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+            border-color: #3b82f6;
+        }
+
+        /* Hero Banner Image Fix */
+        .hero-banner-bg {
+            background-image: linear-gradient(rgba(9, 15, 36, 0.85), rgba(9, 15, 36, 0.92)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1200');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 bg-[#090F24]/90 backdrop-blur-md border-b border-gray-800/80 px-4 md:px-12 py-3.5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <!-- Logo Section -->
+            <a href="/" class="flex items-center gap-3 group">
+                <div class="w-11 h-11 bg-white rounded-full flex items-center justify-center p-1 shadow-md shadow-blue-500/10 group-hover:scale-105 transition duration-300">
+                    <img src="{{ url_for('static', filename='Images/Logo.png') }}" alt="Logo" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <h1 class="text-base font-bold text-white tracking-wide group-hover:text-blue-400 transition">Varsity Internship Portal</h1>
+                    <p class="text-[11px] text-blue-500 font-medium">Department of Computer Science & Engineering</p>
+                </div>
+            </a>
+
+            <!-- User Info & Logout -->
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2.5 bg-[#0F1938] px-4 py-2 rounded-full border border-gray-800 shadow-inner">
+                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span class="text-xs font-semibold text-blue-400"><i class="fas fa-user-graduate me-1"></i> {{ session.get('user', 'Student') }}</span>
+                    <span class="text-[10px] bg-blue-950 text-blue-400 font-extrabold px-2 py-0.5 rounded border border-blue-800/50 uppercase">Student</span>
+                </div>
+                <a href="/logout" class="border border-red-600/60 bg-red-600/10 hover:bg-red-600 text-xs font-semibold px-4 py-2 rounded-lg text-white transition duration-300 flex items-center gap-2">
+                    <i class="fas fa-right-from-bracket"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 md:px-12 py-8 w-full space-y-8 flex-grow">
+        
+        <!-- Hero Banner Card with Explicit CSS Image Overlay -->
+        <section class="hero-banner-bg min-h-[260px] md:min-h-[300px] flex items-center rounded-2xl p-8 md:p-12 overflow-hidden shadow-2xl border border-gray-800/80 relative">
+            <div class="max-w-3xl space-y-4 relative z-10">
+                <span class="text-xs font-bold uppercase tracking-widest text-blue-400 bg-blue-950/80 px-3 py-1 rounded-full border border-blue-800/50 inline-block">
+                    <i class="fas fa-rocket text-blue-400 me-1.5"></i> Student Workspace
+                </span>
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight tracking-tight">
+                    Bridge Your Academic Excellence to Corporate Careers
+                </h2>
+                <p class="text-gray-300 text-xs sm:text-sm leading-relaxed max-w-2xl">
+                    A centralized pipeline designed for CSE students to explore verified corporate internships, submit portfolios, and accelerate career trajectories.
+                </p>
+            </div>
+        </section>
+
+        <!-- Search & Location Filter Section -->
+        <section class="glass-card p-4 md:p-5 rounded-2xl shadow-xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="relative flex items-center">
+                    <i class="fas fa-search absolute left-4 text-blue-400 text-sm"></i>
+                    <input type="text" placeholder="Search internships by title or technology..." class="w-full pl-11 pr-4 py-3 bg-[#090F24] border border-gray-800 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none input-glow transition duration-300">
+                </div>
+                <div class="relative flex items-center">
+                    <i class="fas fa-location-dot absolute left-4 text-pink-500 text-sm"></i>
+                    <input type="text" placeholder="Filter by location (e.g., Remote, Dhaka)..." class="w-full pl-11 pr-4 py-3 bg-[#090F24] border border-gray-800 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none input-glow transition duration-300">
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Internships Feed -->
+        <section class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+            <div class="px-6 py-4 border-b border-gray-800/80 flex justify-between items-center bg-[#090F24]/50">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-briefcase text-blue-500 text-sm"></i>
+                    <h3 class="text-sm font-bold tracking-wide text-white">Available Internships</h3>
+                    <span class="text-[11px] text-blue-400 bg-blue-950/60 px-2.5 py-0.5 rounded-full font-medium border border-blue-900/40">[NUB Live Feed]</span>
+                </div>
+            </div>
+
+            <div class="p-6">
+                {% if internships %}
+                <!-- Live Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for item in internships %}
+                    <div class="bg-[#090F24] border border-gray-800/80 hover:border-blue-500/50 p-5 rounded-xl flex flex-col justify-between transition duration-300 hover:-translate-y-1 shadow-lg group">
+                        <div>
+                            <div class="flex justify-between items-start gap-2 mb-3">
+                                <span class="text-[11px] bg-blue-950/80 text-blue-400 font-bold px-2.5 py-1 rounded-md border border-blue-800/50">
+                                    {{ item.title }}
+                                </span>
+                            </div>
+                            <h4 class="font-bold text-sm text-white group-hover:text-blue-400 transition">{{ item.company_name }}</h4>
+                            
+                            <div class="space-y-1.5 mt-3 text-[11px] text-gray-400">
+                                <p class="flex items-center gap-2"><i class="fas fa-location-dot text-pink-500 w-3"></i> {{ item.location }}</p>
+                                <p class="flex items-center gap-2"><i class="fas fa-money-bill-wave text-emerald-500 w-3"></i> {{ item.stipend if item.stipend else 'Unpaid' }}</p>
+                            </div>
+
+                            <p class="text-xs text-gray-400 mt-3 line-clamp-3 leading-relaxed">
+                                {{ item.description }}
+                            </p>
+                        </div>
+                        
+                        <div class="mt-5 pt-3 border-t border-gray-800/60 flex justify-between items-center">
+                            <span class="text-[10px] text-gray-500"><i class="far fa-clock me-1"></i> Active</span>
+                            <a href="/apply/{{ item.id }}" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition duration-300 shadow-md shadow-blue-600/20">
+                                Apply Now &rarr;
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% else %}
+                <!-- Empty State Block -->
+                <div class="py-16 text-center text-gray-400 space-y-3">
+                    <div class="w-16 h-16 bg-gray-800/40 rounded-full flex items-center justify-center mx-auto text-gray-500 text-2xl border border-gray-700/50">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <p class="text-sm font-semibold text-gray-300">No approved internships are currently available.</p>
+                    <p class="text-xs text-gray-500 max-w-sm mx-auto">Please check back later. New opportunities posted by companies will appear here instantly.</p>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#080E21] border-t border-gray-800/80 py-6 px-4 md:px-12 text-center text-xs text-gray-500">
+        <p>&copy; 2026 Varsity Internship Portal. Department of Computer Science & Engineering.</p>
+    </footer>
+
+</body>
+</html>
