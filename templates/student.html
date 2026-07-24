@@ -3,164 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Varsity Internship Portal - Student Dashboard</title>
-    
-    <!-- Tailwind CSS CDN -->
+    <title>Varsity Internship Portal - For Students</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        body { 
-            background-color: #0B132B; 
-            color: #FFFFFF; 
-            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
-        }
-        .glass-card {
-            background: rgba(15, 25, 56, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .input-glow:focus {
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
-            border-color: #3b82f6;
-        }
-
-        /* Hero Banner Image Fix */
-        .hero-banner-bg {
-            background-image: linear-gradient(rgba(9, 15, 36, 0.85), rgba(9, 15, 36, 0.92)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1200');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+        body { background-color: #0B132B; color: #FFFFFF; font-family: 'Inter', sans-serif; }
+        .custom-gradient {
+            background: linear-gradient(180deg, rgba(11, 19, 43, 0.7) 0%, rgba(11, 19, 43, 0.95) 100%);
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between">
+<body>
 
-    <!-- Navbar -->
-    <nav class="sticky top-0 z-50 bg-[#090F24]/90 backdrop-blur-md border-b border-gray-800/80 px-4 md:px-12 py-3.5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            
-            <!-- Logo Section -->
-            <a href="/" class="flex items-center gap-3 group">
-                <div class="w-11 h-11 bg-white rounded-full flex items-center justify-center p-1 shadow-md shadow-blue-500/10 group-hover:scale-105 transition duration-300">
-                    <img src="{{ url_for('static', filename='Images/Logo.png') }}" alt="Logo" class="w-full h-full object-contain">
+    <!-- Navigation Bar -->
+    <nav class="flex flex-col lg:flex-row justify-between items-center gap-4 px-4 md:px-12 py-4 bg-[#090F24] border-b border-gray-800/60 sticky top-0 z-50">
+        <div class="flex items-center gap-3 flex-shrink-0">
+            <div class="logo-section" style="display: flex; align-items: center; gap: 12px;">
+                <img src="{{ url_for('static', filename='Images/Logo.png') }}" alt="Logo" style="width: 45px; height: 45px; background-color: #ffffff; border-radius: 50%; padding: 4px; object-fit: contain;">
+                <div style="display: flex; flex-direction: column; justify-content: center; line-height: 1.2;">
+                    <h2 style="font-size: 16px; color: #ffffff; font-weight: 700; margin: 0; padding-bottom: 2px; white-space: nowrap;">Varsity Internship Portal</h2>
+                    <p style="font-size: 11px; color: #3b82f6; font-weight: 500; margin: 0; white-space: nowrap;">Department of Computer Science & Engineering</p>
                 </div>
-                <div>
-                    <h1 class="text-base font-bold text-white tracking-wide group-hover:text-blue-400 transition">Varsity Internship Portal</h1>
-                    <p class="text-[11px] text-blue-500 font-medium">Department of Computer Science & Engineering</p>
-                </div>
-            </a>
-
-            <!-- User Info & Logout -->
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2.5 bg-[#0F1938] px-4 py-2 rounded-full border border-gray-800 shadow-inner">
-                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span>
-                    <span class="text-xs font-semibold text-blue-400"><i class="fas fa-user-graduate me-1"></i> {{ session.get('user', 'Student') }}</span>
-                    <span class="text-[10px] bg-blue-950 text-blue-400 font-extrabold px-2 py-0.5 rounded border border-blue-800/50 uppercase">Student</span>
-                </div>
-                <a href="/logout" class="border border-red-600/60 bg-red-600/10 hover:bg-red-600 text-xs font-semibold px-4 py-2 rounded-lg text-white transition duration-300 flex items-center gap-2">
-                    <i class="fas fa-right-from-bracket"></i> Logout
-                </a>
             </div>
+        </div>
+        
+        <div class="flex items-center justify-center gap-2 md:gap-4 lg:gap-5 text-[11px] sm:text-xs font-medium text-gray-300 flex-nowrap overflow-x-auto max-w-full py-1">
+            <a href="/" class="hover:text-white transition whitespace-nowrap">Home</a>
+            <a href="/internships" class="hover:text-white transition whitespace-nowrap">Internships</a>
+            <a href="/company" class="hover:text-white transition whitespace-nowrap">For Companies</a>
+            <a href="/student" class="text-white border-b-2 border-blue-500 pb-1 whitespace-nowrap">For Students</a>
+            <a href="#" class="hover:text-white transition whitespace-nowrap">Contact</a>
+            
+            <div class="h-4 w-[1px] bg-gray-700 mx-1 hidden sm:block"></div>
+
+            {% if session.get('logged_in') %}
+                <span class="text-right text-[12px] font-semibold text-blue-400 flex flex-col justify-center leading-tight whitespace-nowrap flex-shrink-0">
+                    <span><i class="fas fa-user-graduate text-[10px] mr-1"></i> {{ session.get('user_name', 'Student') }}</span>
+                    <small class="text-[9px] text-gray-400 font-normal">({{ session.get('user_type', 'Student') | capitalize }})</small>
+                </span>
+                <a href="/logout" class="border border-red-600 bg-red-600/10 px-3 py-1.5 sm:px-4 sm:py-2 rounded text-white font-semibold hover:bg-red-600 transition whitespace-nowrap flex-shrink-0">Logout</a>
+            {% else %}
+                <a href="/login" class="border border-gray-700 px-3 py-1.5 sm:px-4 sm:py-2 rounded text-white font-semibold hover:bg-gray-800 transition whitespace-nowrap flex-shrink-0">Login</a>
+                <a href="/register" class="bg-blue-600 px-3 py-1.5 sm:px-4 sm:py-2 rounded text-white font-semibold hover:bg-blue-700 transition whitespace-nowrap flex-shrink-0">Register</a>
+            {% endif %}
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 md:px-12 py-8 w-full space-y-8 flex-grow">
-        
-        <!-- Hero Banner Card with Explicit CSS Image Overlay -->
-        <section class="hero-banner-bg min-h-[260px] md:min-h-[300px] flex items-center rounded-2xl p-8 md:p-12 overflow-hidden shadow-2xl border border-gray-800/80 relative">
-            <div class="max-w-3xl space-y-4 relative z-10">
-                <span class="text-xs font-bold uppercase tracking-widest text-blue-400 bg-blue-950/80 px-3 py-1 rounded-full border border-blue-800/50 inline-block">
-                    <i class="fas fa-rocket text-blue-400 me-1.5"></i> Student Workspace
-                </span>
-                <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight tracking-tight">
-                    Bridge Your Academic Excellence to Corporate Careers
-                </h2>
-                <p class="text-gray-300 text-xs sm:text-sm leading-relaxed max-w-2xl">
-                    A centralized pipeline designed for CSE students to explore verified corporate internships, submit portfolios, and accelerate career trajectories.
-                </p>
-            </div>
-        </section>
+    <!-- Header / Hero Section -->
+    <header class="relative bg-cover bg-center min-h-[350px] md:h-[400px] flex items-center px-6 sm:px-12 lg:px-24 py-12 md:py-0" style="background-image: linear-gradient(rgba(9, 15, 36, 0.85), rgba(9, 15, 36, 0.95)), url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1200');">
+        <div class="max-w-3xl relative z-10 w-full">
+            <span class="text-xs font-bold uppercase tracking-wider text-blue-500 mb-2 block">Student Workspace</span>
+            <h2 class="text-3xl sm:text-4xl font-black mb-3 leading-tight tracking-tight">Kickstart Your Professional Career</h2>
+            <p class="text-gray-400 text-xs sm:text-sm leading-relaxed max-w-2xl">Explore verified internship opportunities, submit applications directly to companies, and track your recruitment status in real time.</p>
+        </div>
+    </header>
 
-        <!-- Search & Location Filter Section -->
-        <section class="glass-card p-4 md:p-5 rounded-2xl shadow-xl">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="relative flex items-center">
-                    <i class="fas fa-search absolute left-4 text-blue-400 text-sm"></i>
-                    <input type="text" placeholder="Search internships by title or technology..." class="w-full pl-11 pr-4 py-3 bg-[#090F24] border border-gray-800 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none input-glow transition duration-300">
-                </div>
-                <div class="relative flex items-center">
-                    <i class="fas fa-location-dot absolute left-4 text-pink-500 text-sm"></i>
-                    <input type="text" placeholder="Filter by location (e.g., Remote, Dhaka)..." class="w-full pl-11 pr-4 py-3 bg-[#090F24] border border-gray-800 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none input-glow transition duration-300">
-                </div>
+    <!-- Stats Overview Cards -->
+    <section class="mx-6 sm:mx-12 lg:mx-24 -mt-12 relative z-10 grid grid-cols-2 md:grid-cols-4 gap-4 bg-[#0F1938] p-6 rounded-xl border border-gray-800/80 shadow-2xl">
+        <div class="flex items-center gap-4 justify-center md:border-r border-gray-800 pb-2 md:pb-0">
+            <div class="w-10 h-10 rounded-lg bg-blue-600/10 flex items-center justify-center text-blue-500"><i class="fa-solid fa-paper-plane text-sm"></i></div>
+            <div>
+                <div class="text-lg sm:text-xl font-black">{{ total_applied if total_applied else 0 }}</div>
+                <div class="text-[11px] text-gray-400">Applied Jobs</div>
             </div>
-        </section>
-
-        <!-- Live Internships Feed -->
-        <section class="glass-card rounded-2xl overflow-hidden shadow-2xl">
-            <div class="px-6 py-4 border-b border-gray-800/80 flex justify-between items-center bg-[#090F24]/50">
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-briefcase text-blue-500 text-sm"></i>
-                    <h3 class="text-sm font-bold tracking-wide text-white">Available Internships</h3>
-                    <span class="text-[11px] text-blue-400 bg-blue-950/60 px-2.5 py-0.5 rounded-full font-medium border border-blue-900/40">[NUB Live Feed]</span>
-                </div>
+        </div>
+        <div class="flex items-center gap-4 justify-center border-gray-800 pb-2 md:pb-0 md:border-r">
+            <div class="w-10 h-10 rounded-lg bg-amber-600/10 flex items-center justify-center text-amber-500"><i class="fa-solid fa-clock text-sm"></i></div>
+            <div>
+                <div class="text-lg sm:text-xl font-black">{{ pending_count if pending_count else 0 }}</div>
+                <div class="text-[11px] text-gray-400">Under Review</div>
             </div>
+        </div>
+        <div class="flex items-center gap-4 justify-center md:border-r border-gray-800 pt-2 md:pt-0">
+            <div class="w-10 h-10 rounded-lg bg-green-600/10 flex items-center justify-center text-green-500"><i class="fa-solid fa-circle-check text-sm"></i></div>
+            <div>
+                <div class="text-lg sm:text-xl font-black">{{ shortlisted_count if shortlisted_count else 0 }}</div>
+                <div class="text-[11px] text-gray-400">Shortlisted</div>
+            </div>
+        </div>
+        <div class="flex items-center gap-4 justify-center pt-2 md:pt-0">
+            <div class="w-10 h-10 rounded-lg bg-red-600/10 flex items-center justify-center text-red-500"><i class="fa-solid fa-circle-xmark text-sm"></i></div>
+            <div>
+                <div class="text-lg sm:text-xl font-black">{{ rejected_count if rejected_count else 0 }}</div>
+                <div class="text-[11px] text-gray-400">Not Selected</div>
+            </div>
+        </div>
+    </section>
 
-            <div class="p-6">
+    <!-- Main Workspace (Available Internships + Applied Status) -->
+    <section class="px-6 sm:px-12 lg:px-24 py-16">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Side: Available Internships Feed -->
+            <div class="lg:col-span-6 bg-[#0F1938] p-6 sm:p-8 rounded-xl border border-gray-800 shadow-xl h-fit">
+                <div class="flex items-center gap-3 mb-6 border-b border-gray-800 pb-4">
+                    <div class="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-500 flex items-center justify-center">
+                        <i class="fa-solid fa-briefcase text-xs"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm text-gray-100">Available Internships</h3>
+                        <p class="text-[10px] text-gray-400">Apply for open tech roles from partner companies</p>
+                    </div>
+                </div>
+
                 {% if internships %}
-                <!-- Live Cards Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {% for item in internships %}
-                    <div class="bg-[#090F24] border border-gray-800/80 hover:border-blue-500/50 p-5 rounded-xl flex flex-col justify-between transition duration-300 hover:-translate-y-1 shadow-lg group">
-                        <div>
-                            <div class="flex justify-between items-start gap-2 mb-3">
-                                <span class="text-[11px] bg-blue-950/80 text-blue-400 font-bold px-2.5 py-1 rounded-md border border-blue-800/50">
-                                    {{ item.title }}
-                                </span>
+                <div class="space-y-4 max-h-[600px] overflow-y-auto pr-1">
+                    {% for job in internships %}
+                    <div class="bg-[#090F24] p-4 rounded-lg border border-gray-800/80 hover:border-blue-500/50 transition">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h4 class="font-bold text-sm text-white">{{ job.title }}</h4>
+                                <p class="text-[11px] text-blue-400 font-medium">{{ job.company_name if job.company_name else 'Partner Company' }}</p>
                             </div>
-                            <h4 class="font-bold text-sm text-white group-hover:text-blue-400 transition">{{ item.company_name }}</h4>
-                            
-                            <div class="space-y-1.5 mt-3 text-[11px] text-gray-400">
-                                <p class="flex items-center gap-2"><i class="fas fa-location-dot text-pink-500 w-3"></i> {{ item.location }}</p>
-                                <p class="flex items-center gap-2"><i class="fas fa-money-bill-wave text-emerald-500 w-3"></i> {{ item.stipend if item.stipend else 'Unpaid' }}</p>
-                            </div>
-
-                            <p class="text-xs text-gray-400 mt-3 line-clamp-3 leading-relaxed">
-                                {{ item.description }}
-                            </p>
+                            <span class="text-[10px] bg-blue-950/80 text-blue-400 border border-blue-800/50 px-2 py-0.5 rounded font-semibold">{{ job.stipend }}</span>
                         </div>
-                        
-                        <div class="mt-5 pt-3 border-t border-gray-800/60 flex justify-between items-center">
-                            <span class="text-[10px] text-gray-500"><i class="far fa-clock me-1"></i> Active</span>
-                            <a href="/apply/{{ item.id }}" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition duration-300 shadow-md shadow-blue-600/20">
-                                Apply Now &rarr;
-                            </a>
+
+                        <p class="text-gray-400 text-[11px] mb-3 line-clamp-2 leading-relaxed">{{ job.description }}</p>
+
+                        <div class="flex items-center justify-between text-[10px] text-gray-400 pt-2 border-t border-gray-800/60">
+                            <span class="flex items-center gap-1"><i class="fa-solid fa-location-dot text-blue-500"></i> {{ job.location }}</span>
+                            
+                            {% if job.id in applied_job_ids %}
+                                <span class="bg-gray-800 text-gray-400 px-3 py-1 rounded font-semibold cursor-not-allowed">Already Applied</span>
+                            {% else %}
+                                <a href="/apply/{{ job.id }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 py-1 rounded transition flex items-center gap-1">
+                                    <i class="fa-solid fa-paper-plane text-[9px]"></i> Apply Now
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
                     {% endfor %}
                 </div>
-
                 {% else %}
-                <!-- Empty State Block -->
-                <div class="py-16 text-center text-gray-400 space-y-3">
-                    <div class="w-16 h-16 bg-gray-800/40 rounded-full flex items-center justify-center mx-auto text-gray-500 text-2xl border border-gray-700/50">
-                        <i class="fas fa-inbox"></i>
-                    </div>
-                    <p class="text-sm font-semibold text-gray-300">No approved internships are currently available.</p>
-                    <p class="text-xs text-gray-500 max-w-sm mx-auto">Please check back later. New opportunities posted by companies will appear here instantly.</p>
+                <div class="text-center py-12 border border-dashed border-gray-800 rounded-lg">
+                    <i class="fa-solid fa-folder-open text-gray-600 text-3xl mb-3"></i>
+                    <p class="text-xs text-gray-400 font-medium">No open internships available right now.</p>
+                    <p class="text-[10px] text-gray-500 mt-1">Check back later for new opportunities from recruiters.</p>
                 </div>
                 {% endif %}
             </div>
-        </section>
 
-    </main>
+            <!-- Right Side: Applied Internships History -->
+            <div class="lg:col-span-6 bg-[#0F1938] p-6 sm:p-8 rounded-xl border border-gray-800 shadow-xl">
+                <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-purple-600/10 text-purple-500 flex items-center justify-center">
+                            <i class="fa-solid fa-list-check text-xs"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm text-gray-100">My Applications</h3>
+                            <p class="text-[10px] text-gray-400">Track status of submitted internship applications</p>
+                        </div>
+                    </div>
+                </div>
+
+                {% if my_applications %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-gray-300">
+                        <thead class="bg-[#090F24] text-[10px] text-gray-400 uppercase tracking-wider border-b border-gray-800">
+                            <tr>
+                                <th class="py-3 px-3">Position</th>
+                                <th class="py-3 px-3">Company</th>
+                                <th class="py-3 px-3 text-right">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-800/60">
+                            {% for app in my_applications %}
+                            <tr class="hover:bg-[#111C3D] transition">
+                                <td class="py-3.5 px-3">
+                                    <div class="font-bold text-gray-100">{{ app.internship.title }}</div>
+                                    <div class="text-[10px] text-gray-400">{{ app.internship.location }}</div>
+                                </td>
+                                <td class="py-3.5 px-3">
+                                    <span class="text-blue-400 font-medium">{{ app.internship.company_name if app.internship.company_name else 'Recruiter' }}</span>
+                                </td>
+                                <td class="py-3.5 px-3 text-right">
+                                    {% if app.status == 'Pending' %}
+                                        <span class="text-[10px] bg-amber-950/80 text-amber-400 border border-amber-800/50 font-semibold px-2.5 py-1 rounded inline-block">Pending Review</span>
+                                    {% elif app.status == 'Shortlisted' %}
+                                        <span class="text-[10px] bg-green-950/80 text-green-400 border border-green-800/50 font-semibold px-2.5 py-1 rounded inline-block">Shortlisted</span>
+                                    {% else %}
+                                        <span class="text-[10px] bg-red-950/80 text-red-400 border border-red-800/50 font-semibold px-2.5 py-1 rounded inline-block">Not Selected</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <!-- Empty State -->
+                <div class="text-center py-12 border border-dashed border-gray-800 rounded-lg">
+                    <i class="fa-solid fa-inbox text-gray-600 text-3xl mb-3"></i>
+                    <p class="text-xs text-gray-400 font-medium">You haven't applied to any internships yet.</p>
+                    <p class="text-[10px] text-gray-500 mt-1">Browse available positions on the left and apply to start tracking.</p>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </section>
 
     <!-- Footer -->
-    <footer class="bg-[#080E21] border-t border-gray-800/80 py-6 px-4 md:px-12 text-center text-xs text-gray-500">
-        <p>&copy; 2026 Varsity Internship Portal. Department of Computer Science & Engineering.</p>
+    <footer class="bg-[#080E21] border-t border-gray-800/80 pt-16 pb-6 px-6 sm:px-12 lg:px-24 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 mb-12">
+            <div class="lg:col-span-4 space-y-4">
+                <div class="flex items-center gap-2.5">
+                    <img src="{{ url_for('static', filename='Images/Logo.png') }}" alt="Varsity Logo" class="w-11 h-11 object-contain rounded-full bg-white p-1">
+                    <div>
+                        <h4 class="font-bold text-gray-100 text-sm">Varsity Internship Portal</h4>
+                        <p class="text-[9px] text-blue-500 font-medium">Department of Computer Science & Engineering</p>
+                    </div>
+                </div>
+                <p class="text-gray-400 leading-relaxed text-[11px] pr-6">
+                    Empowering CSE students to build successful careers through verified internships and industry collaboration.
+                </p>
+            </div>
+
+            <div class="lg:col-span-2 space-y-3">
+                <h5 class="font-bold text-gray-200 uppercase tracking-wider text-[11px]">Quick Links</h5>
+                <ul class="space-y-2 text-gray-400">
+                    <li><a href="/" class="hover:text-blue-400 transition">Home</a></li>
+                    <li><a href="/internships" class="hover:text-blue-400 transition">Internships</a></li>
+                    <li><a href="/student" class="hover:text-blue-400 transition">For Students</a></li>
+                    <li><a href="/company" class="hover:text-blue-400 transition">For Companies</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition">Contact Us</a></li>
+                </ul>
+            </div>
+
+            <div class="lg:col-span-2 space-y-3">
+                <h5 class="font-bold text-gray-200 uppercase tracking-wider text-[11px]">Resources</h5>
+                <ul class="space-y-2 text-gray-400">
+                    <li><a href="#" class="hover:text-blue-400 transition">How It Works</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition">Guidelines</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition">FAQ</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition">Terms of Service</a></li>
+                </ul>
+            </div>
+
+            <div class="lg:col-span-4 space-y-3">
+                <h5 class="font-bold text-gray-200 uppercase tracking-wider text-[11px]">Contact Us</h5>
+                <ul class="space-y-2 text-gray-400">
+                    <li class="flex items-start gap-2">
+                        <i class="fa-solid fa-location-dot mt-0.5 text-blue-500 text-[10px]"></i>
+                        <span>kawla Bazar,Ashkona,Dakshinkhan,Dhaka, Bangladesh</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fa-solid fa-envelope text-blue-500 text-[10px]"></i>
+                        <a href="mailto:cse@varsity.edu.bd" class="hover:underline">cse@varsity.edu.bd</a>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fa-solid fa-phone text-blue-500 text-[10px]"></i>
+                        <span>+880 1712-345678</span>
+                    </li>
+                </ul>
+                <div class="flex gap-3 pt-2">
+                    <a href="#" class="w-7 h-7 rounded-full bg-gray-800/80 hover:bg-blue-600 hover:text-white transition flex items-center justify-center text-gray-400"><i class="fa-brands fa-facebook-f text-[11px]"></i></a>
+                    <a href="#" class="w-7 h-7 rounded-full bg-gray-800/80 hover:bg-blue-400 hover:text-white transition flex items-center justify-center text-gray-400"><i class="fa-brands fa-linkedin-in text-[11px]"></i></a>
+                    <a href="#" class="w-7 h-7 rounded-full bg-gray-800/80 hover:bg-blue-500 hover:text-white transition flex items-center justify-center text-gray-400"><i class="fa-brands fa-twitter text-[11px]"></i></a>
+                    <a href="#" class="w-7 h-7 rounded-full bg-gray-800/80 hover:bg-red-600 hover:text-white transition flex items-center justify-center text-gray-400"><i class="fa-brands fa-youtube text-[11px]"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-800/50 pt-4 text-center text-[10px] text-gray-500">
+            &copy; 2026 Varsity Internship Portal. All rights reserved.
+        </div>
     </footer>
 
 </body>
