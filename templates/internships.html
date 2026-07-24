@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Varsity Internship Portal - All Internships</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #0B132B; color: #FFFFFF; font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="flex flex-col lg:flex-row justify-between items-center gap-4 px-4 md:px-12 py-4 bg-[#090F24] border-b border-gray-800/60 sticky top-0 z-50">
+        <div class="flex items-center gap-3 flex-shrink-0">
+            <div class="logo-section" style="display: flex; align-items: center; gap: 12px;">
+                <img src="{{ url_for('static', filename='Images/Logo.png') }}" alt="Logo" style="width: 45px; height: 45px; background-color: #ffffff; border-radius: 50%; padding: 4px; object-fit: contain;">
+                <div style="display: flex; flex-direction: column; justify-content: center; line-height: 1.2;">
+                    <h2 style="font-size: 16px; color: #ffffff; font-weight: 700; margin: 0; padding-bottom: 2px; white-space: nowrap;">Varsity Internship Portal</h2>
+                    <p style="font-size: 11px; color: #3b82f6; font-weight: 500; margin: 0; white-space: nowrap;">Department of Computer Science & Engineering</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex items-center justify-center gap-2 md:gap-4 lg:gap-5 text-[11px] sm:text-xs font-medium text-gray-300 flex-nowrap overflow-x-auto max-w-full py-1">
+            <a href="/" class="hover:text-white transition whitespace-nowrap">Home</a>
+            <a href="/internships" class="text-white border-b-2 border-blue-500 pb-1 whitespace-nowrap">Internships</a>
+
+            <!-- Conditional Navigation Links -->
+            {% if not session.get('logged_in') %}
+                <a href="/company" class="hover:text-white transition whitespace-nowrap">For Companies</a>
+                <a href="/student" class="hover:text-white transition whitespace-nowrap">For Students</a>
+            {% elif session.get('user_type') == 'student' %}
+                <a href="/student" class="hover:text-white transition whitespace-nowrap">For Students</a>
+            {% elif session.get('user_type') == 'company' %}
+                <a href="/company" class="hover:text-white transition whitespace-nowrap">For Companies</a>
+            {% endif %}
+
+            <a href="#" class="hover:text-white transition whitespace-nowrap">Contact</a>
+            
+            <div class="h-4 w-[1px] bg-gray-700 mx-1 hidden sm:block"></div>
+
+            {% if session.get('logged_in') %}
+                <span class="text-right text-[12px] font-semibold text-blue-400 flex flex-col justify-center leading-tight whitespace-nowrap flex-shrink-0">
+                    <span><i class="fas fa-user text-[10px] mr-1"></i> {{ session.get('user_name', 'User') }}</span>
+                    <small class="text-[9px] text-gray-400 font-normal">({{ session.get('user_type', 'User') | capitalize }})</small>
+                </span>
+                <a href="/logout" class="border border-red-600 bg-red-600/10 px-3 py-1.5 sm:px-4 sm:py-2 rounded text-white font-semibold hover:bg-red-600 transition whitespace-nowrap flex-shrink-0">Logout</a>
+            {% else %}
+                <a href="/login" class="border border-gray-700 px-3 py-1.5 sm:px-4 sm:py-2 rounded text-white font-semibold hover:bg-gray-800 transition whitespace-nowrap flex-shrink-0">Login</a>
+                <a href="/register" class="bg-blue-600 px-3 py-1.5 sm:px-4 sm:py-2 rounded text-white font-semibold hover:bg-blue-700 transition whitespace-nowrap flex-shrink-0">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Header / Hero Section -->
+    <header class="relative bg-cover bg-center min-h-[250px] md:h-[300px] flex items-center px-6 sm:px-12 lg:px-24 py-8" style="background-image: linear-gradient(rgba(9, 15, 36, 0.88), rgba(9, 15, 36, 0.98)), url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200');">
+        <div class="max-w-3xl relative z-10 w-full">
+            <span class="text-xs font-bold uppercase tracking-wider text-blue-500 mb-2 block">Career Opportunities</span>
+            <h2 class="text-3xl sm:text-4xl font-black mb-3 leading-tight tracking-tight">Explore Live Internships</h2>
+            <p class="text-gray-400 text-xs sm:text-sm leading-relaxed max-w-2xl">Find verified CSE internship roles from top companies, kickstart your professional journey, and apply in just a click.</p>
+        </div>
+    </header>
+
+    <!-- Search & Filter Bar -->
+    <section class="mx-6 sm:mx-12 lg:mx-24 -mt-8 relative z-10 bg-[#0F1938] p-4 sm:p-6 rounded-xl border border-gray-800/80 shadow-2xl">
+        <form action="/internships" method="GET" class="grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs">
+            <div class="sm:col-span-5 relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-gray-500 text-xs"></i>
+                <input type="text" name="search" value="{{ search_query if search_query else '' }}" placeholder="Search by role, stack (e.g., Python, Frontend)..." class="w-full bg-[#090F24] border border-gray-700/80 rounded-lg pl-10 pr-3.5 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition">
+            </div>
+            <div class="sm:col-span-4 relative">
+                <i class="fa-solid fa-location-dot absolute left-3.5 top-3.5 text-gray-500 text-xs"></i>
+                <input type="text" name="location" value="{{ location_query if location_query else '' }}" placeholder="Location / Remote..." class="w-full bg-[#090F24] border border-gray-700/80 rounded-lg pl-10 pr-3.5 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition">
+            </div>
+            <div class="sm:col-span-3 flex gap-2">
+                <button type="submit" class="w-full bg-blue-600 text-xs py-2.5 rounded-lg font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-filter text-[10px]"></i> Search Roles
+                </button>
+                {% if search_query or location_query %}
+                <a href="/internships" class="px-3 bg-gray-800 text-gray-300 hover:text-white rounded-lg flex items-center justify-center transition" title="Clear Filters">
+                    <i class="fa-solid fa-xmark"></i>
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </section>
+
+    <!-- Main Content Grid -->
+    <section class="px-6 sm:px-12 lg:px-24 py-12">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-sm font-bold text-gray-200">
+                Available Positions <span class="text-xs text-blue-400 font-normal">({{ internships|length if internships else 0 }} Openings)</span>
+            </h3>
+        </div>
+
+        {% if internships %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for item in internships %}
+            <div class="bg-[#0F1938] border border-gray-800 hover:border-blue-500/50 rounded-xl p-5 shadow-lg transition duration-200 flex flex-col justify-between">
+                <div>
+                    <!-- Card Top Info -->
+                    <div class="flex items-start justify-between gap-3 mb-3">
+                        <div>
+                            <span class="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded uppercase tracking-wider">
+                                {{ item.company_name if item.company_name else 'Partner Company' }}
+                            </span>
+                            <h4 class="font-bold text-base text-gray-100 mt-1.5 leading-snug">{{ item.title }}</h4>
+                        </div>
+                        <div class="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center text-gray-300 flex-shrink-0">
+                            <i class="fa-solid fa-briefcase text-sm"></i>
+                        </div>
+                    </div>
+
+                    <!-- Key Details Bar -->
+                    <div class="flex flex-wrap items-center gap-y-2 gap-x-4 text-[11px] text-gray-400 mb-4 border-y border-gray-800/80 py-2.5">
+                        <span class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-location-dot text-blue-500 text-[10px]"></i> {{ item.location }}
+                        </span>
+                        <span class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-sack-dollar text-green-500 text-[10px]"></i> {{ item.stipend }}
+                        </span>
+                    </div>
+
+                    <!-- Description Preview -->
+                    <p class="text-xs text-gray-400 leading-relaxed line-clamp-3 mb-4">
+                        {{ item.description }}
+                    </p>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="pt-3 border-t border-gray-800/60 flex items-center justify-between gap-2 mt-auto">
+                    <span class="text-[10px] text-gray-500">
+                        Posted {{ item.posted_date if item.posted_date else 'Recently' }}
+                    </span>
+                    
+                    {% if session.get('logged_in') and session.get('user_type') == 'student' %}
+                        <a href="/apply/{{ item.id }}" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition flex items-center gap-1.5">
+                            Apply Now <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </a>
+                    {% elif session.get('logged_in') and session.get('user_type') == 'company' %}
+                        <span class="text-[10px] text-gray-500 italic bg-gray-800/50 px-2.5 py-1 rounded">View Only (Recruiter)</span>
+                    {% else %}
+                        <a href="/login" class="border border-blue-600/50 hover:bg-blue-600 text-blue-400 hover:text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition">
+                            Login to Apply
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-16 bg-[#0F1938] border border-dashed border-gray-800 rounded-xl">
+            <div class="w-12 h-12 rounded-full bg-gray-800 text-gray-500 flex items-center justify-center mx-auto mb-3">
+                <i class="fa-solid fa-magnifying-glass text-lg"></i>
+            </div>
+            <h4 class="text-sm font-bold text-gray-300 mb-1">No Internships Found</h4>
+            <p class="text-xs text-gray-500">Try adjusting your search terms or check back later for new company postings.</p>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#080E21] border-t border-gray-800/80 pt-16 pb-6 px-6 sm:px-12 lg:px-24 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 mb-12">
+            <div class="lg:col-span-4 space-y-4">
+                <div class="flex items-center gap-2.5">
+                    <img src="{{ url_for('static', filename='Images/Logo.png') }}" alt="Varsity Logo" class="w-11 h-11 object-contain rounded-full bg-white p-1">
+                    <div>
+                        <h4 class="font-bold text-gray-100 text-sm">Varsity Internship Portal</h4>
+                        <p class="text-[9px] text-blue-500 font-medium">Department of Computer Science & Engineering</p>
+                    </div>
+                </div>
+                <p class="text-gray-400 leading-relaxed text-[11px] pr-6">
+                    Empowering CSE students to build successful careers through verified internships and industry collaboration.
+                </p>
+            </div>
+
+            <div class="lg:col-span-2 space-y-3">
+                <h5 class="font-bold text-gray-200 uppercase tracking-wider text-[11px]">Quick Links</h5>
+                <ul class="space-y-2 text-gray-400">
+                    <li><a href="/" class="hover:text-blue-400 transition">Home</a></li>
+                    <li><a href="/internships" class="hover:text-blue-400 transition">Internships</a></li>
+                    <li><a href="/student" class="hover:text-blue-400 transition">For Students</a></li>
+                    <li><a href="/company" class="hover:text-blue-400 transition">For Companies</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition">Contact Us</a></li>
+                </ul>
+            </div>
+
+            <div class="lg:col-span-2 space-y-3">
+                <h5 class="font-bold text-gray-200 uppercase tracking-wider text-[11px]">Resources</h5>
+                <ul class="space-y-2 text-gray-400">
+                    <li><a href="#" class="hover:text-blue-400 transition">How It Works</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition">Guidelines</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition">FAQ</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition">Terms of Service</a></li>
+                </ul>
+            </div>
+
+            <div class="lg:col-span-4 space-y-3">
+                <h5 class="font-bold text-gray-200 uppercase tracking-wider text-[11px]">Contact Us</h5>
+                <ul class="space-y-2 text-gray-400">
+                    <li class="flex items-start gap-2">
+                        <i class="fa-solid fa-location-dot mt-0.5 text-blue-500 text-[10px]"></i>
+                        <span>kawla Bazar,Ashkona,Dakshinkhan,Dhaka, Bangladesh</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fa-solid fa-envelope text-blue-500 text-[10px]"></i>
+                        <a href="mailto:cse@varsity.edu.bd" class="hover:underline">cse@varsity.edu.bd</a>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fa-solid fa-phone text-blue-500 text-[10px]"></i>
+                        <span>+880 1712-345678</span>
+                    </li>
+                </ul>
+                <div class="flex gap-3 pt-2">
+                    <a href="#" class="w-7 h-7 rounded-full bg-gray-800/80 hover:bg-blue-600 hover:text-white transition flex items-center justify-center text-gray-400"><i class="fa-brands fa-facebook-f text-[11px]"></i></a>
+                    <a href="#" class="w-7 h-7 rounded-full bg-gray-800/80 hover:bg-blue-400 hover:text-white transition flex items-center justify-center text-gray-400"><i class="fa-brands fa-linkedin-in text-[11px]"></i></a>
+                    <a href="#" class="w-7 h-7 rounded-full bg-gray-800/80 hover:bg-blue-500 hover:text-white transition flex items-center justify-center text-gray-400"><i class="fa-brands fa-twitter text-[11px]"></i></a>
+                    <a href="#" class="w-7 h-7 rounded-full bg-gray-800/80 hover:bg-red-600 hover:text-white transition flex items-center justify-center text-gray-400"><i class="fa-brands fa-youtube text-[11px]"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-800/50 pt-4 text-center text-[10px] text-gray-500">
+            &copy; 2026 Varsity Internship Portal. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>
