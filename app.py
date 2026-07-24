@@ -10,15 +10,24 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# ডাটাবেজ মডেল (টেবিল স্ট্রাকচার)
+# ১. User ডাটাবেজ মডেল (টেবিল স্ট্রাকচার)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fullname = db.Column(db.String(150), nullable=False)
-    email = db.Column(db.String(150), unique=True, nullable=False) # ইমেইল ইউনিক
+    email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
     role = db.Column(db.String(50), nullable=False)  # student অথবা company
-    student_id = db.Column(db.String(50), unique=True, nullable=True) # এখানে unique=True করা হলো, যাতে এক ID দুইবার না বসে
+    student_id = db.Column(db.String(50), unique=True, nullable=True)
     department = db.Column(db.String(100), nullable=True)
+
+# ২. Internship ডাটাবেজ মডেল
+class Internship(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(150), nullable=False)
+    company_name = db.Column(db.String(150), nullable=False)
+    location = db.Column(db.String(100), nullable=False)
+    stipend = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.Text, nullable=False)
 
 # টেবিল তৈরি করার লজিক
 with app.app_context():
@@ -60,20 +69,17 @@ def register():
         department = request.form.get('department')
         
         if email and password:
-            # ১. ইমেইলটি ডাটাবেজে আগে থেকে আছে কি না চেক করা
             existing_user = User.query.filter_by(email=email).first()
             if existing_user:
                 flash("Email already exists! Try another one.")
                 return redirect(url_for('register'))
             
-            # ২. স্টুডেন্ট রোল হলে, Student ID আগে থেকেই ডাটাবেজে আছে কি না চেক করা
             if role == 'student' and student_id:
                 existing_sid = User.query.filter_by(student_id=student_id).first()
                 if existing_sid:
                     flash("This Student ID is already registered! Please use your own ID.")
                     return redirect(url_for('register'))
             
-            # রোল অনুযায়ী ডেটা সেট করে অবজেক্ট তৈরি করা
             if role == 'student':
                 new_user = User(
                     fullname=fullname,
@@ -91,7 +97,6 @@ def register():
                     role='company'
                 )
             
-            # ডেটা সেভ করা হচ্ছে
             db.session.add(new_user)
             db.session.commit()
             
@@ -100,28 +105,60 @@ def register():
             
     return render_template('register.html')
 
-# === নতুন যোগ করা ড্যাশবোর্ড রুট ===
 @app.route('/student')
 def student():
-    # সিকিউরিটি চেক: লগইন না থাকলে লগইন পেজে রিডাইরেক্ট করবে
     if not session.get('logged_in'):
         flash("Please login first to view your dashboard!")
         return redirect(url_for('login'))
     
-    # dashboard.html এর {{ session['user'] }} ভ্যারিয়েবলের সাথে মিল রাখার জন্য সেশন ডাটা সেট করা
     session['user'] = session.get('user_name')
-    
     return render_template('student.html')
+
+@app.route('/company')
+def company():
+    return render_template('company.html')
 
 @app.route('/logout')
 def logout():
     session.clear()   
     return redirect(url_for('home')) 
- 
-@app.route('/company')
-def company():
-    # কোম্পানি ড্যাশবোর্ড পেজ রেন্ডার করবে
-    return render_template('company.html')
+
+@app.route("/post-internship", methods=["POST"])
+def post_internship():
+    if not session.get('logged_in') or session.get('user_type') != 'company':
+        flash("Unauthorized action!")
+        return redirect(url_for('login'))
+
+    internship = Internship(
+        title=request.form["title"],
+        company_name=session["user_name"],   
+        location=request.form["location"],
+        stipend=request.form["stipend"],
+        description=request.form["description"]
+    )
+
+    db.session.add(internship)
+    db.session.commit()
+    flash("Internship posted successfully!")
+    return redirect(url_for('company'))
+
+# একমাত্র এবং সঠিক /internship রুট (ডুপ্লিকেট রিমুভ করা হয়েছে)
+@app.route("/internships")
+def internship():
+    search = request.args.get("search", "")
+
+    if search:
+        internships = Internship.query.filter(
+            (Internship.company_name.contains(search)) |
+            (Internship.title.contains(search))
+        ).order_by(Internship.id.desc()).all()
+    else:
+        internships = Internship.query.order_by(Internship.id.desc()).all()
+
+    return render_template(
+        "internship.html",
+        internships=internships
+    )
 
 if __name__ == '__main__':
     app.run(debug=True)
